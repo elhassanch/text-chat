@@ -8,7 +8,7 @@ var file = new(static.Server)();
 
 var app = http.createServer(function (req, res) {
     file.serve(req, res);
-}).listen(8181);
+}).listen(process.env.PORT || 8181);
 
 
 var io = require("socket.io")(app, {
