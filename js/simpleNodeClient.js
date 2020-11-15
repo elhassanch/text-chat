@@ -69,7 +69,7 @@ function sendData(){
 }
 
 
-var socket = io.connect('http://localhost:8181');
+var socket = io.connect('https://src-app.herokuapp.com');
 
 channelButton.onclick=getChannel;
 function getChannel(){
