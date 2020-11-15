@@ -68,6 +68,7 @@ textarea {
     margin-bottom: 40px;
     max-width: 300px;
     position: relative;
+    overflow-wrap:anywhere;
 }
 .outgoing {
     background: #8F8BE8;
