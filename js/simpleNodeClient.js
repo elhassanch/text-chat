@@ -15,7 +15,6 @@ sendButton.disabled = false;
 dataChannelSend.disabled = false;
 var socket = io.connect('https://src-app.herokuapp.com');
 
-
 sendButton.onclick = sendData;
 channelButton.onclick=getChannel;
 
