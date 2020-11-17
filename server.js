@@ -37,7 +37,7 @@ io.sockets.on('connection', function (socket){
 
             socket.join(channel);
             socket.emit('created', channel);
-        } else if (numClients < 10) {
+        } else if (numClients < 100) {
             io.sockets.in(channel).emit('remotePeerJoining',
             channel);
             socket.join(channel);
