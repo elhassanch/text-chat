@@ -11,17 +11,20 @@ var channelButton = document.getElementById("channelButton");
 
 var dataChannelSend=document.getElementById("dataChannelSend");
 var dataChannelReceive=document.getElementById("dataChannelReceive");
-
+var sendButton = document.getElementById("sendButton");
 
 
 var x=0;
-var sendButton = document.getElementById("sendButton");
+
 sendButton.disabled = false;
 dataChannelSend.disabled = false;
-
+var socket = io.connect('https://src-app.herokuapp.com');
 
 
 sendButton.onclick = sendData;
+channelButton.onclick=getChannel;
+
+// BUTTON LISTENER ============================================================
 function sendData(){
     if (x==0){
         var myMessage = [];
@@ -65,13 +68,8 @@ function sendData(){
         });
         }
     }
-    
 }
 
-
-var socket = io.connect('https://src-app.herokuapp.com');
-
-channelButton.onclick=getChannel;
 function getChannel(){
     channel = input.value;
     username =inputUser.value;
@@ -90,25 +88,15 @@ function getChannel(){
 }
 
 
-
+// SOCKET EVENT CALLBACKS =====================================================
 socket.on('created', function (channel){
     console.log('channel ' + channel + ' has been created!');
     console.log('This peer is the initiator...');
     
-  
     appendInfo("Channel "+ channel + " has been created!");
     scrollToBottom();
     appendInfo("You are the initiator!");
     scrollToBottom();
-});
-
-socket.on('full', function (channel){
-    console.log('channel ' + channel + ' is too crowded! \ Cannot allow you to enter, sorry :-(');
-    appendInfo('channel ' + channel + ' is too crowded! \ Cannot allow you to enter, sorry :-(');
-    scrollToBottom();
-    // div.insertAdjacentHTML( 'beforeEnd', '<p>Time: ' +(performance.now() / 1000).toFixed(3) +
-    //      ' --> \ channel ' + channel + ' is too crowded! \
-    //     Cannot allow you to enter, sorry :-( </p>');
 });
 
 socket.on('remotePeerJoining', function (channel){
@@ -127,43 +115,29 @@ socket.on('joined', function (msg){
 });
 
 socket.on('broadcast: joined', function (msg){
-    // div.insertAdjacentHTML( 'beforeEnd', '<p style="color:red">Time: ' +
-    //     (performance.now() / 1000).toFixed(3) + ' --> Broadcast message from server: </p>');
-    // div.insertAdjacentHTML( 'beforeEnd', '<p style="color:red">' + msg + '</p>');
+    console.log('Broadcast message from server: ' + msg);
+    
     appendInfo(msg);
     scrollToBottom();
-    console.log('Broadcast message from server: ' + msg);
-
-    
-    
 });
 
-socket.on('log', function (array){
-    console.log.apply(console, array);
+socket.on('full', function (channel){
+    console.log('channel ' + channel + ' is too crowded! \ Cannot allow you to enter, sorry :-(');
+    
+    appendInfo('channel ' + channel + ' is too crowded! \ Cannot allow you to enter, sorry :-(');
+    scrollToBottom();
 });
 
-socket.on('message', function (message){
-    
+socket.on('message', function (message){   
     console.log('Got message from other peer: ' + message);
-    // div.insertAdjacentHTML( 'beforeEnd', '<p>Time: ' +
-    //     (performance.now() / 1000).toFixed(3) + ' --> Got message from other peer: </p>');
-    // div.insertAdjacentHTML( 'beforeEnd', '<p style="color:blue">' + message + '</p>');
-    // document.getElementById("dataChannelReceive").value = username + " : "+  message;
-    // document.getElementById("dataChannelSend").value = '';
+    
     appendMessage(message, 'incoming');
     scrollToBottom();
-    
-    
 });
 
 socket.on('response', function (response){
-    
     console.log('Got response from other peer: ' + response);
-    // div.insertAdjacentHTML( 'beforeEnd', '<p>Time: ' +
-    // (performance.now() / 1000).toFixed(3) + ' --> Got response from other peer: </p>');
-    // div.insertAdjacentHTML( 'beforeEnd', '<p style="color:blue">' + response + '</p>');
-    // document.getElementById("dataChannelReceive").value = username + " : "+ response;
-    // document.getElementById("dataChannelSend").value = '';
+    
     appendMessage(response, 'incoming');
     scrollToBottom();
     
@@ -171,17 +145,12 @@ socket.on('response', function (response){
 
 socket.on('Bye', function (){
     console.log('Got "Bye" from other peer! Going to disconnect...');
-    // div.insertAdjacentHTML( 'beforeEnd', '<p>Time: ' +
-    //     (performance.now() / 1000).toFixed(3) + ' --> Got "Bye" from other peer!</p>');
-    // div.insertAdjacentHTML( 'beforeEnd', '<p>Time: ' +
-    //     (performance.now() / 1000).toFixed(3) + ' --> Sending "Ack" to server</p>');
     appendInfo("<marquee behavior='scroll' direction='left' style='color:red'>Got 'Bye' from the other peer</marquee>");
     scrollToBottom();
     appendInfo("<p style='color:red'>Sending 'Ack' to server</p>");
     scrollToBottom();
     console.log('Sending "Ack" to server');
     socket.emit('Ack');
-    // div.insertAdjacentHTML( 'beforeEnd', '<p>Time: ' +(performance.now() / 1000).toFixed(3) + ' --> Going to disconnect...</p>');
     appendInfo("<p style='color:red'>Going to disconnect...</</p>");
     scrollToBottom();
     console.log('Going to disconnect...');
@@ -190,6 +159,11 @@ socket.on('Bye', function (){
     dataChannelSend.disabled = true;
  });
 
+socket.on('log', function (array){
+    console.log.apply(console, array);
+});
+
+// FUNCTIONS ==================================================================
  function appendMessage(msg, type) {
     let mainDiv = document.createElement('div');
     let className = type;
