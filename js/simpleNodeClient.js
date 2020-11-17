@@ -1,9 +1,3 @@
-div = document.getElementById('scratchPad');
-var channel;
-var username;
-
-var allClient;
-
 var nameRoom=document.getElementById("nameRoom");
 var input = document.getElementById("channelInput");
 var inputUser = document.getElementById("usernameInput");
@@ -13,7 +7,8 @@ var dataChannelSend=document.getElementById("dataChannelSend");
 var dataChannelReceive=document.getElementById("dataChannelReceive");
 var sendButton = document.getElementById("sendButton");
 
-
+var channel;
+var username;
 var x=0;
 
 sendButton.disabled = false;
