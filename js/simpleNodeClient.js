@@ -48,13 +48,10 @@ function sendData(){
         appendMessage(myMessage, 'outgoing');
         scrollToBottom();
         if(myMessage[0] == "Bye"){
-            // div.insertAdjacentHTML( 'beforeEnd', '<p>Time: ' (performance.now() / 1000).toFixed(3) + ' --> Sending "Bye" to server...</p>');
             appendInfo("<marquee behavior='scroll' direction='left' style='color:red'>Sending 'Bye' to server</marquee>");
             scrollToBottom();
             console.log('Sending "Bye" to server');
             socket.emit('Bye', channel);
-            // div.insertAdjacentHTML( 'beforeEnd', '<p>Time: ' +
-            //     (performance.now() / 1000).toFixed(3) +' --> Going to disconnect...</p>');
             appendInfo("<p style='color:red'>Going to disconnect...</p>");
             scrollToBottom();
             console.log('Going to disconnect...');
