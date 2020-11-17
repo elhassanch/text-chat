@@ -10,7 +10,7 @@ var app = http.createServer(function (req, res) {
     file.serve(req, res);
 }).listen(process.env.PORT || 8181);
 
-
+// Solve CORS ISSUES =================================================================
 var io = require("socket.io")(app, {
     cors: {
       origin: "*",
@@ -21,25 +21,18 @@ var io = require("socket.io")(app, {
 });
 
 io.sockets.on('connection', function (socket){
-    socket.on('message', function (message) {
-        log('S --> Got message: ', message);
-        socket.broadcast.to(message.channel).emit('message',  message.message);
-    });
 
+    // Store ClientsID + Username ======================
     socket.on('clientsID', function (username) {
         allCLients[socket.id]=username;
     });
 
+    // Create/Join the room ======================
     socket.on('create or join', function (channel) {
-
-        // var clientsList = io.sockets.adapter.rooms[channel];
-        // var numClients = clientsList.length;
-        
         var numClients = io.sockets.adapter.rooms[channel]!=undefined ? Object.keys(io.sockets.adapter.rooms[channel]).length:i;
         i=i+1;
-        // var numClients = io.sockets.clients(channel).length;
         console.log('numclients = ' + numClients);
-
+        
         if (numClients == 0){
 
             socket.join(channel);
@@ -56,7 +49,12 @@ io.sockets.on('connection', function (socket){
             socket.emit('full', channel);
         }
     });
-
+    
+    socket.on('message', function (message) {
+        log('S --> Got message: ', message);
+        socket.broadcast.to(message.channel).emit('message',  message.message);
+    });
+    
     socket.on('response', function (response) {
         log('S --> Got response: ', response);
         socket.broadcast.to(response.channel).emit('response',
